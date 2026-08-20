@@ -2,5 +2,8 @@
 
 Throwaway static host for mermaid diagrams and other one-off pages.
 
-- GitHub Pages: https://kingdomseed.github.io/binaryloom-scratch/
-- Custom domain: https://scratch.binaryloom.io (Cloudflare DNS CNAME → `kingdomseed.github.io`)
+- Live: https://scratch.binaryloom.io
+- Pages.dev: https://binaryloom-scratch.pages.dev
+- GitHub: https://github.com/kingdomseed/binaryloom-scratch
+
+DNS: `scratch.binaryloom.io` CNAME → `binaryloom-scratch.pages.dev` (Cloudflare Pages).
