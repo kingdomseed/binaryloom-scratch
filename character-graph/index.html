@@ -31,7 +31,7 @@ flowchart LR
   creation_step_personality_traits -- "next step" --> creation_step_goals
   creation_step_goals -- "next step" --> creation_step_status
 </pre>
-<h2>Race, culture, and background</h2><p>Playable races, Human cultures, cultural backgrounds, and the eligibility edges between them.</p><pre class="mermaid">
+<h2>Race, culture, and background</h2><p>Playable races, Human cultures, cultural backgrounds, and the eligibility edges between them. Red dashed arrows are prohibitions.</p><pre class="mermaid">
 flowchart LR
   background_barbarian["Barbarian<br/>Ch7 tr.p.4"]
   background_civilized_rural["Civilized, Rural<br/>Ch7 tr.p.4"]
@@ -85,15 +85,16 @@ flowchart LR
   choice_group_human_culture -- "regional result" --> culture_drangia
   choice_group_human_culture -- "regional result" --> culture_sattagoya
   race_half_orc -- "rare, not prohibited" --> background_civilized_urban
-  race_ogre -- "cannot take Civilized background" --> background_civilized_urban
-  race_ogre -- "cannot take Civilized background" --> background_civilized_rural
-  race_bolg_fiir -- "cannot take Civilized, Urban" --> background_civilized_urban
+  race_ogre --> background_civilized_urban
+  race_ogre --> background_civilized_rural
+  race_bolg_fiir --> background_civilized_urban
   choice_group_cultural_background -- "background result" --> background_civilized_urban
   choice_group_cultural_background -- "background result" --> background_civilized_rural
   choice_group_cultural_background -- "background result" --> background_barbarian
   choice_group_cultural_background -- "background result" --> background_wanderer
+  linkStyle 24,25,26 stroke:#c0392b,stroke-width:2px,stroke-dasharray:5 5
 </pre>
-<h2>Previous careers</h2><p>The ten careers with their choice groups, granted talents, and coin rolls.</p><pre class="mermaid">
+<h2>Previous careers</h2><p>The ten careers with their choice groups and granted talents (coin roll tables omitted).</p><pre class="mermaid">
 flowchart LR
   career_bard["Bard<br/>Ch7 tr.p.7"]
   career_civilian["Civilian<br/>Ch7 tr.p.7"]
@@ -135,69 +136,74 @@ flowchart LR
   choice_group_spellweaver_thread["Spellweaver Starting Thread<br/>Ch7 tr.p.7"]
   choice_group_warrior_combat_talent["Warrior Combat Talent<br/>Ch7 tr.p.6"]
   choice_group_warrior_named_skill["Warrior Language or -wise<br/>Ch7 tr.p.6"]
-  roll_table_career_coin_1d6x10["Career Coin 1d6 × 10<br/>Ch7 tr.p.7"]
-  roll_table_career_coin_1d6x5["Career Coin 1d6 × 5<br/>Ch7 tr.p.6"]
-  roll_table_career_coin_2d4x10["Career Coin 2d4 × 10<br/>Ch7 tr.p.6"]
-  roll_table_career_coin_2d6x10["Career Coin 2d6 × 10<br/>Ch7 tr.p.7"]
-  roll_table_career_coin_3d6x10["Career Coin 3d6 × 10<br/>Ch7 tr.p.7"]
   talent_armor_training_iii["Armor Training III<br/>Tal. p.40"]
   talent_entertaining["Entertaining<br/>Tal. p.46"]
   talent_experienced["Experienced<br/>Ch7 tr.p.7"]
   talent_godbound["Godbound<br/>Tal. p.50"]
   talent_literate["Literate<br/>Tal. p.48"]
   talent_patterned_in_the_weave["Patterned in the Weave<br/>Tal. p.50"]
-  career_warrior -- "grants" --> choice_group_warrior_named_skill
-  career_warrior -- "grants" --> talent_armor_training_iii
-  career_warrior -- "grants" --> choice_group_warrior_combat_talent
-  career_warrior -- "rollsOn" --> roll_table_career_coin_1d6x5
-  career_rogue -- "grants" --> choice_group_rogue_named_skill
-  career_rogue -- "grants" --> choice_group_rogue_talents
-  career_rogue -- "rollsOn" --> roll_table_career_coin_1d6x5
-  career_ranger -- "grants" --> choice_group_ranger_named_skill
-  career_ranger -- "grants" --> choice_group_ranger_fixed_talent
-  career_ranger -- "grants" --> choice_group_ranger_open_talent
-  career_ranger -- "rollsOn" --> roll_table_career_coin_1d6x5
-  career_speaker -- "grants" --> choice_group_speaker_named_skill
-  career_speaker -- "grants" --> choice_group_speaker_talents
-  career_speaker -- "rollsOn" --> roll_table_career_coin_2d4x10
-  career_bard -- "grants" --> choice_group_bard_named_skills
-  career_bard -- "grants" --> talent_entertaining
-  career_bard -- "grants" --> choice_group_bard_social_talent
-  career_bard -- "rollsOn" --> roll_table_career_coin_1d6x5
-  career_civilian -- "grants" --> choice_group_civilian_named_skill
-  career_civilian -- "grants" --> talent_experienced
-  career_civilian -- "grants" --> choice_group_civilian_open_talent
-  career_civilian -- "rollsOn" --> roll_table_career_coin_2d6x10
-  career_loremaster -- "grants" --> choice_group_loremaster_named_skills
-  career_loremaster -- "grants" --> talent_literate
-  career_loremaster -- "grants" --> choice_group_loremaster_fixed_talent
-  career_loremaster -- "rollsOn" --> roll_table_career_coin_2d4x10
-  career_merchant -- "grants" --> choice_group_merchant_named_skill
-  career_merchant -- "grants" --> talent_literate
-  career_merchant -- "grants" --> choice_group_merchant_fixed_talent
-  career_merchant -- "rollsOn" --> roll_table_career_coin_3d6x10
-  career_godbound -- "grants" --> choice_group_godbound_patron_deity
-  career_godbound -- "grants" --> talent_godbound
-  career_godbound -- "grants" --> choice_group_godbound_piety_pool
-  career_godbound -- "grants" --> choice_group_godbound_lore_talent
-  career_godbound -- "rollsOn" --> roll_table_career_coin_1d6x10
-  career_spellweaver -- "grants" --> choice_group_spellweaver_binds
-  career_spellweaver -- "grants" --> choice_group_spellweaver_focus_strands
-  career_spellweaver -- "grants" --> choice_group_spellweaver_thin_strands
-  career_spellweaver -- "grants" --> choice_group_spellweaver_bind_point_pool
-  career_spellweaver -- "grants" --> choice_group_spellweaver_focus_strand_pool
-  career_spellweaver -- "grants" --> choice_group_spellweaver_flexible_strand_pool
-  career_spellweaver -- "grants" --> choice_group_spellweaver_bind_expertise
-  career_spellweaver -- "grants" --> choice_group_spellweaver_named_skill
-  career_spellweaver -- "grants" --> talent_patterned_in_the_weave
-  career_spellweaver -- "grants" --> talent_literate
-  career_spellweaver -- "grants" --> choice_group_spellweaver_thread
-  career_spellweaver -- "allows" --> choice_group_spellweaver_convocation
-  career_spellweaver -- "rollsOn" --> roll_table_career_coin_1d6x5
+  career_warrior --> choice_group_warrior_named_skill
+  career_warrior --> talent_armor_training_iii
+  career_warrior --> choice_group_warrior_combat_talent
+  career_rogue --> choice_group_rogue_named_skill
+  career_rogue --> choice_group_rogue_talents
+  career_ranger --> choice_group_ranger_named_skill
+  career_ranger --> choice_group_ranger_fixed_talent
+  career_ranger --> choice_group_ranger_open_talent
+  career_speaker --> choice_group_speaker_named_skill
+  career_speaker --> choice_group_speaker_talents
+  career_bard --> choice_group_bard_named_skills
+  career_bard --> talent_entertaining
+  career_bard --> choice_group_bard_social_talent
+  career_civilian --> choice_group_civilian_named_skill
+  career_civilian --> talent_experienced
+  career_civilian --> choice_group_civilian_open_talent
+  career_loremaster --> choice_group_loremaster_named_skills
+  career_loremaster --> talent_literate
+  career_loremaster --> choice_group_loremaster_fixed_talent
+  career_merchant --> choice_group_merchant_named_skill
+  career_merchant --> talent_literate
+  career_merchant --> choice_group_merchant_fixed_talent
+  career_godbound --> choice_group_godbound_patron_deity
+  career_godbound --> talent_godbound
+  career_godbound --> choice_group_godbound_piety_pool
+  career_godbound --> choice_group_godbound_lore_talent
+  career_spellweaver --> choice_group_spellweaver_binds
+  career_spellweaver --> choice_group_spellweaver_focus_strands
+  career_spellweaver --> choice_group_spellweaver_thin_strands
+  career_spellweaver --> choice_group_spellweaver_bind_point_pool
+  career_spellweaver --> choice_group_spellweaver_focus_strand_pool
+  career_spellweaver --> choice_group_spellweaver_flexible_strand_pool
+  career_spellweaver --> choice_group_spellweaver_bind_expertise
+  career_spellweaver --> choice_group_spellweaver_named_skill
+  career_spellweaver --> talent_patterned_in_the_weave
+  career_spellweaver --> talent_literate
+  career_spellweaver --> choice_group_spellweaver_thread
+  career_spellweaver --> choice_group_spellweaver_convocation
   talent_godbound -- "Creation-only career restriction" --> career_godbound
 </pre>
-<h2>Weave and divine magic</h2><p>Binds, Strands, and Piety with the careers and features that gate them.</p><pre class="mermaid">
+<h2>Weave and divine magic</h2><p>Binds, Strands, and Piety (grouped under Magic) with the careers and features that gate them. Red dashed arrows are prohibitions.</p><pre class="mermaid">
 flowchart LR
+  subgraph skill_category_magic["Magic<br/>Sk. p.29"]
+    direction TB
+    magic_bind_change["Bind: Change<br/>Sk. p.29"]
+    magic_bind_conjure["Bind: Conjure<br/>Sk. p.29"]
+    magic_bind_control["Bind: Control<br/>Sk. p.29"]
+    magic_bind_destroy["Bind: Destroy<br/>Sk. p.29"]
+    magic_bind_witness["Bind: Witness<br/>Sk. p.29"]
+    magic_strand_air["Strand: Air<br/>Sk. p.29"]
+    magic_strand_beast["Strand: Beast<br/>Sk. p.29"]
+    magic_strand_body["Strand: Body<br/>Sk. p.29"]
+    magic_strand_earth["Strand: Earth<br/>Sk. p.29"]
+    magic_strand_fire["Strand: Fire<br/>Sk. p.29"]
+    magic_strand_plant["Strand: Plant<br/>Sk. p.29"]
+    magic_strand_selected["Selected Strand<br/>Sk. p.29"]
+    magic_strand_spheres["Strand: Spheres<br/>Sk. p.29"]
+    magic_strand_spirit["Strand: Spirit<br/>Sk. p.29"]
+    magic_strand_thought["Strand: Thought<br/>Sk. p.29"]
+    magic_strand_water["Strand: Water<br/>Sk. p.29"]
+    piety_piety["Piety<br/>Sk. p.34"]
+  end
   career_godbound["Godbound<br/>Ch7 tr.p.7"]
   career_spellweaver["Spellweaver<br/>Ch7 tr.p.7"]
   choice_group_godbound_lore_talent["Godbound Lore Talent<br/>Ch7 tr.p.7"]
@@ -216,29 +222,14 @@ flowchart LR
   choice_group_spellweaver_thin_strands["Spellweaver Thin Strands<br/>Ch7 tr.p.7"]
   choice_group_spellweaver_thread["Spellweaver Starting Thread<br/>Ch7 tr.p.7"]
   feature_fade["Fade identity<br/>Tal. p.49"]
-  magic_bind_change["Bind: Change<br/>Sk. p.29"]
-  magic_bind_conjure["Bind: Conjure<br/>Sk. p.29"]
-  magic_bind_control["Bind: Control<br/>Sk. p.29"]
-  magic_bind_destroy["Bind: Destroy<br/>Sk. p.29"]
-  magic_bind_witness["Bind: Witness<br/>Sk. p.29"]
-  magic_strand_air["Strand: Air<br/>Sk. p.29"]
-  magic_strand_beast["Strand: Beast<br/>Sk. p.29"]
-  magic_strand_body["Strand: Body<br/>Sk. p.29"]
-  magic_strand_earth["Strand: Earth<br/>Sk. p.29"]
-  magic_strand_fire["Strand: Fire<br/>Sk. p.29"]
-  magic_strand_plant["Strand: Plant<br/>Sk. p.29"]
-  magic_strand_selected["Selected Strand<br/>Sk. p.29"]
-  magic_strand_spheres["Strand: Spheres<br/>Sk. p.29"]
-  magic_strand_spirit["Strand: Spirit<br/>Sk. p.29"]
-  magic_strand_thought["Strand: Thought<br/>Sk. p.29"]
-  magic_strand_water["Strand: Water<br/>Sk. p.29"]
   piety_patron_deity["Patron deity<br/>Tal. p.50"]
-  piety_piety["Piety<br/>Sk. p.34"]
   rule_expertise_eligibility["Expertise Eligibility<br/>Tal. p.54"]
   rule_fade_strand_cap["Fade Strand Cap<br/>Adv. p.125"]
   rule_magic_skill_structure["Magic Skill Structure<br/>Sk. p.29"]
   rule_piety_no_xp["Piety Cannot Be Bought With XP<br/>Adv. p.125"]
+  rule_skill_competency_bands["Skill Competency Bands<br/>Sk. p.34"]
   rule_spellweaver_strand_fraying["Spellweaver Strands Above 10 Cause Fraying<br/>Adv. p.124"]
+  rule_supporting_skills["Supporting Skills and Help<br/>Sk. p.37"]
   rule_xp_new_bind["XP Spend: New Bind<br/>Adv. p.124"]
   rule_xp_strand_increase["XP Spend: Strand Increase<br/>Adv. p.124"]
   talent_faded_pattern["Faded Pattern<br/>Tal. p.49"]
@@ -249,80 +240,62 @@ flowchart LR
   talent_patterned_in_the_weave["Patterned in the Weave<br/>Tal. p.50"]
   talent_strand_secret["Strand Secret (Strand)<br/>Tal. p.50"]
   talent_unerring_bolt["Unerring Bolt (Strand)<br/>Tal. p.50"]
-  career_godbound -- "grants" --> choice_group_godbound_patron_deity
-  career_godbound -- "grants" --> talent_godbound
-  career_godbound -- "grants" --> choice_group_godbound_piety_pool
-  career_godbound -- "grants" --> choice_group_godbound_lore_talent
-  career_spellweaver -- "grants" --> choice_group_spellweaver_binds
-  career_spellweaver -- "grants" --> choice_group_spellweaver_focus_strands
-  career_spellweaver -- "grants" --> choice_group_spellweaver_thin_strands
-  career_spellweaver -- "grants" --> choice_group_spellweaver_bind_point_pool
-  career_spellweaver -- "grants" --> choice_group_spellweaver_focus_strand_pool
-  career_spellweaver -- "grants" --> choice_group_spellweaver_flexible_strand_pool
-  career_spellweaver -- "grants" --> choice_group_spellweaver_bind_expertise
-  career_spellweaver -- "grants" --> choice_group_spellweaver_named_skill
-  career_spellweaver -- "grants" --> talent_patterned_in_the_weave
-  career_spellweaver -- "grants" --> talent_literate
-  career_spellweaver -- "grants" --> choice_group_spellweaver_thread
-  career_spellweaver -- "allows" --> choice_group_spellweaver_convocation
+  career_godbound --> choice_group_godbound_patron_deity
+  career_godbound --> talent_godbound
+  career_godbound --> choice_group_godbound_piety_pool
+  career_godbound --> choice_group_godbound_lore_talent
+  career_spellweaver --> choice_group_spellweaver_binds
+  career_spellweaver --> choice_group_spellweaver_focus_strands
+  career_spellweaver --> choice_group_spellweaver_thin_strands
+  career_spellweaver --> choice_group_spellweaver_bind_point_pool
+  career_spellweaver --> choice_group_spellweaver_focus_strand_pool
+  career_spellweaver --> choice_group_spellweaver_flexible_strand_pool
+  career_spellweaver --> choice_group_spellweaver_bind_expertise
+  career_spellweaver --> choice_group_spellweaver_named_skill
+  career_spellweaver --> talent_patterned_in_the_weave
+  career_spellweaver --> talent_literate
+  career_spellweaver --> choice_group_spellweaver_thread
+  career_spellweaver --> choice_group_spellweaver_convocation
   rule_xp_new_bind -- "Fade Bind maximum 70" --> feature_fade
   rule_xp_strand_increase -- "Raise Strand by one step per purchase" --> choice_group_magic_strand
-  rule_spellweaver_strand_fraying -- "modifies" --> career_spellweaver
-  rule_fade_strand_cap -- "caps" --> feature_fade
-  rule_piety_no_xp -- "caps" --> piety_piety
+  rule_spellweaver_strand_fraying -- "1 Fraying per Strand point raised above 10" --> career_spellweaver
+  rule_fade_strand_cap -- "Fade Strand maximum 7; Thin Strand limits..." --> feature_fade
+  rule_piety_no_xp -- "Piety maximum 90 except temporary modifiers" --> piety_piety
   choice_group_life_event_youth_magician_reward -- "+10 Bind: Change (Spellweaver or Fade)" --> magic_bind_change
-  rule_magic_skill_structure -- "Strands cannot have Expertise" --> magic_strand_air
-  rule_magic_skill_structure -- "Strands cannot have Expertise" --> magic_strand_beast
-  rule_magic_skill_structure -- "Strands cannot have Expertise" --> magic_strand_body
-  rule_magic_skill_structure -- "Strands cannot have Expertise" --> magic_strand_earth
-  rule_magic_skill_structure -- "Strands cannot have Expertise" --> magic_strand_fire
-  rule_magic_skill_structure -- "Strands cannot have Expertise" --> magic_strand_plant
-  rule_magic_skill_structure -- "Strands cannot have Expertise" --> magic_strand_spheres
-  rule_magic_skill_structure -- "Strands cannot have Expertise" --> magic_strand_spirit
-  rule_magic_skill_structure -- "Strands cannot have Expertise" --> magic_strand_thought
-  rule_magic_skill_structure -- "Strands cannot have Expertise" --> magic_strand_water
-  rule_magic_skill_structure -- "Piety cannot have Expertise" --> piety_piety
-  rule_magic_skill_structure -- "caps" --> piety_piety
+  rule_supporting_skills --> skill_category_magic
+  rule_magic_skill_structure -- "Strands cannot have Expertise (x10)" --> magic_strand_air
+  rule_magic_skill_structure --> piety_piety
+  rule_magic_skill_structure -- "Piety can never be more than 90 without..." --> piety_piety
+  rule_skill_competency_bands -- "Binds are rolled like normal skills and read on..." --> skill_category_magic
   talent_forceful_strand -- "Requires target selection" --> choice_group_magic_strand
   talent_strand_secret -- "Requires target selection" --> choice_group_magic_strand
   talent_unerring_bolt -- "Requires target selection" --> choice_group_magic_strand
   talent_godbound -- "Creation-only career restriction" --> career_godbound
-  talent_hunted_by_the_queen -- "Replaced may never learn Weave magic" --> talent_patterned_in_the_weave
-  talent_hunted_by_the_queen -- "Replaced may never learn Weave magic" --> choice_group_magic_strand
+  talent_hunted_by_the_queen --> talent_patterned_in_the_weave
+  talent_hunted_by_the_queen --> choice_group_magic_strand
   talent_godbound -- "Static sheet effect" --> piety_piety
   talent_faded_pattern -- "Granted rule element" --> feature_fade
   talent_godbound -- "Granted rule element" --> piety_patron_deity
-  rule_expertise_eligibility -- "Piety can never have Expertise" --> piety_piety
-  rule_expertise_eligibility -- "Strands can never have Expertise" --> choice_group_magic_strand
+  rule_expertise_eligibility --> piety_piety
+  rule_expertise_eligibility --> choice_group_magic_strand
+  linkStyle 22,23,24,31,32,36,37 stroke:#c0392b,stroke-width:2px,stroke-dasharray:5 5
 </pre>
-<h2>XP and advancement</h2><p>XP earning and spending rules, resource pools, goals, and Expertise ranks.</p><pre class="mermaid">
+<h2>XP and advancement</h2><p>XP earning and spending rules, resource pools, goals, and Expertise ranks. Only rules connected inside this view are shown.</p><pre class="mermaid">
 flowchart LR
   expertise_ex2["Expertise 2<br/>Tal. p.54"]
   expertise_ex3["Expertise 3<br/>Tal. p.54"]
   expertise_ex4["Expertise 4<br/>Tal. p.54"]
   goal_individual["Individual Goal<br/>Goals p.72"]
   goal_shared["Shared Goal<br/>Goals p.72"]
-  resource_pool_inventory_slots["Inventory ENC<br/>Eq. p.130"]
-  resource_pool_max_weapon_enc["Max Weapon ENC<br/>Eq. p.130"]
   resource_pool_xp["Experience Points (XP)<br/>Adv. p.120"]
-  rule_custom_wise_semantics["Custom -wise Skill Semantics<br/>Sk. p.33"]
   rule_expertise_eligibility["Expertise Eligibility<br/>Tal. p.54"]
-  rule_fade_strand_cap["Fade Strand Cap<br/>Adv. p.125"]
   rule_goal_adjust_end_of_session["Goal Adjustment at Session End<br/>Goals p.73"]
   rule_goal_completable["Goal Quality: Completable<br/>Goals p.73"]
   rule_goal_compound_splitting["One Goal, or Many?<br/>Goals p.74"]
   rule_goal_no_overlap["Goal Quality: No Overlap<br/>Goals p.74"]
   rule_goal_specific["Goal Quality: Specific<br/>Goals p.73"]
   rule_goal_varied_focus["Goal Quality: Varied Focus<br/>Goals p.74"]
-  rule_magic_post_creation_faded_pattern["Post-Creation Magic Requires Faded Pattern<br/>Adv. p.124"]
-  rule_magic_skill_structure["Magic Skill Structure<br/>Sk. p.29"]
-  rule_non_native_language_cap["Non-Native Language Cap<br/>Sk. p.32"]
-  rule_personality_trait_change_free["Personality Trait Changes Are Free<br/>Adv. p.124"]
   rule_piety_no_xp["Piety Cannot Be Bought With XP<br/>Adv. p.125"]
-  rule_savvy_skills["Savvy Skills<br/>Sk. p.37"]
-  rule_skill_competency_bands["Skill Competency Bands<br/>Sk. p.34"]
-  rule_spellweaver_strand_fraying["Spellweaver Strands Above 10 Cause Fraying<br/>Adv. p.124"]
-  rule_talent_timing_conventions["Talent Timing Conventions<br/>Tal. p.40"]
   rule_three_goal_target["Three-Goal Target<br/>Goals p.72"]
   rule_xp_buy_talent["XP Spend: Buy Talent<br/>Adv. p.124"]
   rule_xp_earn_complete_individual_goal["Earn XP: Complete Individual Goal<br/>Adv. p.121"]
@@ -348,9 +321,9 @@ flowchart LR
   rule_goal_no_overlap -- "Validation: distinct outcome" --> goal_shared
   rule_goal_varied_focus -- "Validation: varied resolution methods" --> goal_individual
   rule_goal_varied_focus -- "Validation: varied resolution methods" --> goal_shared
-  rule_xp_earn_pursue_goals -- "grants" --> resource_pool_xp
-  rule_xp_earn_pursue_goals -- "requires" --> goal_individual
-  rule_xp_earn_pursue_goals -- "requires" --> goal_shared
+  rule_xp_earn_pursue_goals -- "3 XP per session for meaningful goal pursuit" --> resource_pool_xp
+  rule_xp_earn_pursue_goals -- "Pursuit target (either goal kind qualifies)" --> goal_individual
+  rule_xp_earn_pursue_goals -- "Pursuit target (either goal kind qualifies)" --> goal_shared
   goal_individual -- "1 XP on completion" --> resource_pool_xp
   goal_shared -- "2 XP per sharing member on completion" --> resource_pool_xp
   rule_xp_earn_fail_abandon_goal -- "1 XP for dramatic failure or abandonment" --> resource_pool_xp
@@ -358,26 +331,27 @@ flowchart LR
   rule_xp_earn_trait_penalty -- "1 XP, once per session maximum" --> resource_pool_xp
   rule_xp_improve_skill -- "1 XP per improvement roll" --> resource_pool_xp
   rule_xp_new_wise_language -- "3 XP, starts at 20" --> resource_pool_xp
-  rule_xp_buy_talent -- "costs" --> resource_pool_xp
+  rule_xp_buy_talent -- "5 XP default unless the Talent description..." --> resource_pool_xp
   rule_xp_expertise_cost -- "Ex2 for 4 XP" --> expertise_ex2
   rule_xp_expertise_cost -- "Ex3 for 6 XP, requires Ex2 first" --> expertise_ex3
   rule_xp_expertise_cost -- "Ex4 for 8 XP, requires Ex3 first" --> expertise_ex4
   rule_xp_new_bind -- "5 XP, starts at 10" --> resource_pool_xp
-  rule_xp_strand_increase -- "costs" --> resource_pool_xp
-  rule_xp_new_strand -- "costs" --> resource_pool_xp
-  rule_piety_no_xp -- "excludes" --> resource_pool_xp
+  rule_xp_strand_increase -- "XP equal to the new Strand value, sequential..." --> resource_pool_xp
+  rule_xp_new_strand -- "5 XP (Thin Strand 10 XP), Strand starts at 1" --> resource_pool_xp
+  rule_piety_no_xp --> resource_pool_xp
   rule_xp_earn_complete_individual_goal -- "1 XP per completed individual goal" --> goal_individual
-  rule_xp_earn_complete_shared_goal -- "calculates" --> goal_shared
-  rule_goal_adjust_end_of_session -- "modifies" --> goal_individual
-  rule_goal_adjust_end_of_session -- "modifies" --> goal_shared
-  rule_xp_spend_timing -- "constrains" --> resource_pool_xp
-  rule_goal_compound_splitting -- "constrains" --> goal_individual
-  rule_goal_compound_splitting -- "constrains" --> goal_shared
+  rule_xp_earn_complete_shared_goal -- "2 XP per sharing member per completed shared..." --> goal_shared
+  rule_goal_adjust_end_of_session -- "Goals may be changed at session end with GM..." --> goal_individual
+  rule_goal_adjust_end_of_session -- "Goals may be changed at session end with GM..." --> goal_shared
+  rule_xp_spend_timing -- "XP spendable at session end or start, not during" --> resource_pool_xp
+  rule_goal_compound_splitting -- "Split compound goals into separate sequential..." --> goal_individual
+  rule_goal_compound_splitting -- "Split compound goals into separate sequential..." --> goal_shared
   expertise_ex2 -- "Second Expertise grant" --> expertise_ex3
   expertise_ex3 -- "Third Expertise grant" --> expertise_ex4
   expertise_ex3 -- "Sequential Expertise" --> expertise_ex2
   expertise_ex4 -- "Sequential Expertise" --> expertise_ex3
   rule_expertise_eligibility -- "Absolute Expertise maximum" --> expertise_ex4
+  linkStyle 27 stroke:#c0392b,stroke-width:2px,stroke-dasharray:5 5
 </pre>
 <script type="module">
 import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';

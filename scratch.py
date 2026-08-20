@@ -140,15 +140,9 @@ def cmd_list(_: argparse.Namespace) -> None:
 def wrangler_env() -> dict[str, str]:
     env = os.environ.copy()
     env.setdefault("CLOUDFLARE_ACCOUNT_ID", "bb9c6e1c45f208657aed12579feb6e3b")
-    if env.get("CLOUDFLARE_API_TOKEN"):
-        return env
-    cfg = Path.home() / "Library/Preferences/.wrangler/config/default.toml"
-    if cfg.exists():
-        import tomllib
-
-        token = tomllib.loads(cfg.read_text()).get("oauth_token", "")
-        if token:
-            env["CLOUDFLARE_API_TOKEN"] = token
+    # Wrangler OAuth lives in its config file. Do not copy that token into
+    # CLOUDFLARE_API_TOKEN — expired or OAuth tokens there fail as API tokens.
+    env.pop("CLOUDFLARE_API_TOKEN", None)
     return env
 
 
