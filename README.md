@@ -1,9 +1,28 @@
 # scratch.binaryloom.io
 
-Throwaway static host for mermaid diagrams and other one-off pages.
+Temporary public shares. Index is generated from `live.json`. Each live item is a folder.
+
+```text
+python3 scratch.py up --slug NAME --src /path/to/index.html --title "Title"
+python3 scratch.py down --slug NAME
+python3 scratch.py list
+```
+
+## Examples
+
+```text
+python3 scratch.py up \
+  --slug character-graph \
+  --src "/Users/jasonholt/Broken Empires/character-graph/docs/index.html" \
+  --title "Broken Empires — Character Graph" \
+  --note "Character creation, races, careers, magic, XP."
+
+python3 scratch.py down --slug character-graph
+python3 scratch.py up --slug NAME --src ./doc.html --title "Title" --dry-run
+python3 scratch.py deploy
+```
+
+`--no-deploy` updates the tree without shipping. `up` and `down` deploy unless you pass that.
 
 - Live: https://scratch.binaryloom.io
-- Pages.dev: https://binaryloom-scratch.pages.dev
-- GitHub: https://github.com/kingdomseed/binaryloom-scratch
-
-DNS: `scratch.binaryloom.io` CNAME → `binaryloom-scratch.pages.dev` (Cloudflare Pages).
+- Pages project: `binaryloom-scratch`
