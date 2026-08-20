@@ -1,0 +1,18 @@
+CNAME
+  h_0ab957e4b80c66 1
+README.md
+  h_0ab957e4b80c66 1-6
+index.html
+  h_0ab957e4b80c66 1-153
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "5cc1168ba761e11407112e5fa78f11e4acd19746",
+  "prompts": {},
+  "humans": {
+    "h_0ab957e4b80c66": {
+      "author": "Jason Holt <st199007@stud.uni-stuttgart.de>"
+    }
+  }
+}
