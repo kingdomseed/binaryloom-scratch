@@ -1,0 +1,16 @@
+.agents/skills/scratch-binaryloom/SKILL.md
+  h_0ab957e4b80c66 1-79
+README.md
+  h_0ab957e4b80c66 5-6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "ca110e81d44c4da5a07a2171599ee5629a921ac3",
+  "prompts": {},
+  "humans": {
+    "h_0ab957e4b80c66": {
+      "author": "Jason Holt <st199007@stud.uni-stuttgart.de>"
+    }
+  }
+}
