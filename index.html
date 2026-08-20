@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>scratch.binaryloom.io</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: "base",
+    look: "classic",
+    securityLevel: "loose",
+    themeVariables: {
+      fontFamily: "Bricolage Grotesque, sans-serif",
+      fontSize: "16px",
+      primaryColor: "#d7eee8",
+      primaryTextColor: "#10241f",
+      primaryBorderColor: "#1f6b5a",
+      lineColor: "#1f6b5a",
+      secondaryColor: "#f3ead8",
+      tertiaryColor: "#f7f4ee",
+      clusterBkg: "#f7f4ee",
+      clusterBorder: "#1f6b5a",
+      titleColor: "#10241f"
+    }
+  });
+
+  const DEFAULT = `flowchart TD
+  subgraph you [You do once]
+    Dash["Log in at dash.cloudflare.com<br/>account: jasonholtdigital.com"]
+    Zone["binaryloom.io already uses<br/>Cloudflare nameservers"]
+    Token["Create API token<br/>template: Edit Cloudflare Workers"]
+    Wrangler["npx wrangler login"]
+    Dash --> Token
+    Dash --> Wrangler
+    Zone -.-> Dash
+  end
+
+  subgraph agents [Agents need]
+    Env["CLOUDFLARE_API_TOKEN"]
+    CLI["wrangler on PATH"]
+    MCP["Cloudflare MCP OAuth<br/>or token as bearer"]
+    Skills["Cloudflare / wrangler skills"]
+    Token --> Env
+    Wrangler --> CLI
+    Token --> MCP
+  end
+
+  subgraph host [Throwaway hosting]
+    Pages["wrangler pages deploy"]
+    DNS["CNAME scratch → kingdomseed.github.io<br/>or Pages custom domain"]
+    Live["https://scratch.binaryloom.io"]
+    CLI --> Pages
+    Env --> Pages
+    Pages --> DNS --> Live
+  end`;
+
+  const source = document.getElementById("source");
+  const canvas = document.getElementById("canvas");
+  const status = document.getElementById("status");
+  const params = new URLSearchParams(location.search);
+  const fromQuery = params.get("m");
+  source.value = fromQuery ? fromQuery : DEFAULT;
+
+  async function render() {
+    const id = "mmd-" + Date.now();
+    try {
+      const { svg } = await mermaid.render(id, source.value);
+      canvas.innerHTML = svg;
+      status.textContent = "rendered";
+    } catch (err) {
+      canvas.innerHTML = `<pre class="err">${String(err.message || err)}</pre>`;
+      status.textContent = "syntax error";
+    }
+  }
+
+  document.getElementById("render").addEventListener("click", render);
+  document.getElementById("share").addEventListener("click", async () => {
+    const url = new URL(location.href);
+    url.searchParams.set("m", source.value);
+    history.replaceState(null, "", url);
+    try {
+      await navigator.clipboard.writeText(url.toString());
+      status.textContent = "link copied";
+    } catch {
+      status.textContent = "link in address bar";
+    }
+  });
+  render();
+</script>
+<style>
+  :root {
+    --bg: #f4efe6;
+    --ink: #10241f;
+    --muted: #5c6f69;
+    --line: #cfc6b6;
+    --paper: #fffdf8;
+    --accent: #1f6b5a;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Bricolage Grotesque", sans-serif; }
+  body { min-height: 100vh; display: grid; grid-template-rows: auto 1fr; }
+  header {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+    padding: 18px 22px 12px; border-bottom: 1px solid var(--line);
+  }
+  h1 { font-size: 18px; letter-spacing: -0.02em; margin: 0; }
+  h1 span { color: var(--accent); }
+  .meta { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--muted); }
+  main { display: grid; grid-template-columns: minmax(280px, 34%) 1fr; min-height: 0; }
+  aside { border-right: 1px solid var(--line); display: grid; grid-template-rows: auto 1fr auto; min-height: 0; }
+  label { padding: 12px 16px 8px; font-size: 12px; color: var(--muted); font-family: "IBM Plex Mono", monospace; }
+  textarea {
+    width: 100%; border: 0; resize: none; padding: 0 16px 16px;
+    font: 12.5px/1.45 "IBM Plex Mono", monospace; background: transparent; color: var(--ink);
+  }
+  .actions { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--line); }
+  button {
+    font: 600 13px "Bricolage Grotesque", sans-serif; border: 1px solid var(--ink);
+    background: var(--ink); color: var(--bg); padding: 8px 12px; cursor: pointer;
+  }
+  button.ghost { background: transparent; color: var(--ink); }
+  #view { padding: 24px; overflow: auto; background: var(--paper); }
+  #canvas svg { max-width: 100%; height: auto; }
+  .err { color: #8a2a1e; white-space: pre-wrap; font-family: "IBM Plex Mono", monospace; font-size: 13px; }
+  @media (max-width: 860px) {
+    main { grid-template-columns: 1fr; grid-template-rows: 42vh 1fr; }
+    aside { border-right: 0; border-bottom: 1px solid var(--line); }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1><span>scratch</span>.binaryloom.io</h1>
+    <div class="meta" id="status">loading</div>
+  </header>
+  <main>
+    <aside>
+      <label for="source">mermaid source</label>
+      <textarea id="source" spellcheck="false"></textarea>
+      <div class="actions">
+        <button id="render" type="button">Render</button>
+        <button id="share" class="ghost" type="button">Copy link</button>
+      </div>
+    </aside>
+    <section id="view"><div id="canvas"></div></section>
+  </main>
+</body>
+</html>
