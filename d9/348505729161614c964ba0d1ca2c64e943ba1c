@@ -1,0 +1,19 @@
+character-graph/index.html
+  s_4f7d8c4d7b9f81::t_506a6f1d8c40a5 1-386
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "d9348505729161614c964ba0d1ca2c64e943ba1c",
+  "prompts": {},
+  "sessions": {
+    "s_4f7d8c4d7b9f81": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "067acf69-bacd-4ee1-94ff-270f34cc2aa7",
+        "model": "custom:Kimi-K3-1M-[Kimi-Code-Vivace]-0"
+      },
+      "human_author": "Jason Holt <st199007@stud.uni-stuttgart.de>"
+    }
+  }
+}
