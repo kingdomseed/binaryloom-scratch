@@ -2,6 +2,8 @@
 
 Temporary public shares. Index is generated from `live.json`. Each live item is a folder.
 
+Agents: load skill `scratch-binaryloom` (do not hand-edit the index).
+
 ```text
 python3 scratch.py up --slug NAME --src /path/to/index.html --title "Title"
 python3 scratch.py down --slug NAME
