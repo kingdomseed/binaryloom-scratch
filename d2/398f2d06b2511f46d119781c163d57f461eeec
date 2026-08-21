@@ -1,0 +1,20 @@
+character-creator/assets/index-Dg8hkOkn.css
+  h_0ab957e4b80c66 1
+character-creator/assets/index-VWEQrJ3m.js
+  h_0ab957e4b80c66 1-46
+character-creator/index.html
+  h_0ab957e4b80c66 1-13
+live.json
+  h_0ab957e4b80c66 7-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "d2398f2d06b2511f46d119781c163d57f461eeec",
+  "prompts": {},
+  "humans": {
+    "h_0ab957e4b80c66": {
+      "author": "Jason Holt <st199007@stud.uni-stuttgart.de>"
+    }
+  }
+}
