@@ -4,5 +4,11 @@
     "title": "Broken Empires \u2014 Character Graph",
     "note": "Character creation, races, careers, magic, XP.",
     "added": "2026-08-20"
+  },
+  {
+    "slug": "character-creator",
+    "title": "Broken Empires \u2014 Character Creator",
+    "note": "Graph-driven 12-step wireframe creator.",
+    "added": "2026-08-21"
   }
 ]
