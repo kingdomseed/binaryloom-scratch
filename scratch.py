@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
-"""Publish and take down throwaway pages on scratch.binaryloom.io."""
+"""Publish and take down throwaway pages on scratch.binaryloom.io.
+
+Shares are private by default: they open only from a link carrying a secret key.
+"""
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
+import secrets
 import shutil
 import subprocess
 import sys
@@ -14,21 +19,53 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 LIVE = ROOT / "live.json"
+# Private entries carry only key hashes; the middleware reads this file and hides it.
+PRIVATE = ROOT / "private.json"
+# Plain keys never enter the deployed tree.
+KEYS = Path.home() / ".config" / "binaryloom-scratch" / "keys.json"
+RESERVED = {"live.json", "index.html", "scratch.py", "private.json", "functions"}
 PROJECT = "binaryloom-scratch"
 BASE_URL = "https://scratch.binaryloom.io"
 
 
-def load_live() -> list[dict]:
-    if not LIVE.exists():
+def load_list(path: Path) -> list[dict]:
+    if not path.exists():
         return []
-    data = json.loads(LIVE.read_text())
+    data = json.loads(path.read_text())
     if not isinstance(data, list):
-        sys.exit("Error: live.json must be a JSON array.\n  python3 scratch.py list")
+        sys.exit(f"Error: {path.name} must be a JSON array.\n  python3 scratch.py list")
     return data
 
 
+def save_list(path: Path, items: list[dict]) -> None:
+    path.write_text(json.dumps(items, indent=2) + "\n")
+
+
+def load_live() -> list[dict]:
+    return load_list(LIVE)
+
+
 def save_live(items: list[dict]) -> None:
-    LIVE.write_text(json.dumps(items, indent=2) + "\n")
+    save_list(LIVE, items)
+
+
+def load_keys() -> dict[str, str]:
+    return json.loads(KEYS.read_text()) if KEYS.exists() else {}
+
+
+def save_keys(keys: dict[str, str]) -> None:
+    KEYS.parent.mkdir(parents=True, exist_ok=True)
+    KEYS.touch(mode=0o600, exist_ok=True)
+    KEYS.chmod(0o600)
+    KEYS.write_text(json.dumps(keys, indent=2) + "\n")
+
+
+def key_hash(key: str) -> str:
+    return hashlib.sha256(key.encode()).hexdigest()
+
+
+def private_url(slug: str, key: str) -> str:
+    return f"{BASE_URL}/{slug}/?k={key}"
 
 
 def find(items: list[dict], slug: str) -> dict | None:
@@ -64,7 +101,7 @@ def copy_src(src: Path, dest: Path) -> None:
 
 def cmd_up(args: argparse.Namespace) -> None:
     slug = args.slug.strip("/").strip()
-    if not slug or "/" in slug or slug in {"live.json", "index.html", "scratch.py"}:
+    if not slug or "/" in slug or slug in RESERVED:
         sys.exit(
             "Error: slug must be a single path segment.\n"
             "  python3 scratch.py up --slug character-graph --src ./doc.html --title 'Title'"
@@ -72,54 +109,64 @@ def cmd_up(args: argparse.Namespace) -> None:
     src = Path(args.src).expanduser().resolve()
     if not src.exists():
         sys.exit(f"Error: source not found: {src}")
-    items = load_live()
+    public, private = load_live(), load_list(PRIVATE)
     dest = dest_for(slug)
+    access = "public" if args.public else "private (key link)"
     if args.dry_run:
         print(f"would copy {src} -> {dest}/")
-        print(f"would write live.json slug={slug}")
+        print(f"would list {slug} as {access}")
         print(f"url: {BASE_URL}/{slug}/")
         return
     copy_src(src, dest)
-    entry = find(items, slug)
     now = date.today().isoformat()
-    if entry:
-        entry["title"] = args.title or entry.get("title") or slug
-        if args.note is not None:
-            entry["note"] = args.note
-        entry["added"] = entry.get("added") or now
-        print(f"updated {slug}")
+    old = find(public, slug) or find(private, slug) or {}
+    entry = {
+        "slug": slug,
+        "title": args.title or old.get("title") or slug,
+        "note": args.note if args.note is not None else old.get("note", ""),
+        "added": old.get("added") or now,
+    }
+    public = [i for i in public if i.get("slug") != slug]
+    private = [i for i in private if i.get("slug") != slug]
+    keys = load_keys()
+    if args.public:
+        public.append(entry)
+        keys.pop(slug, None)
+        url = f"{BASE_URL}/{slug}/"
     else:
-        items.append(
-            {
-                "slug": slug,
-                "title": args.title or slug,
-                "note": args.note or "",
-                "added": now,
-            }
-        )
-        print(f"published {slug}")
-    save_live(items)
-    print(f"url: {BASE_URL}/{slug}/")
+        # Re-publishing keeps the existing key so links already sent keep working.
+        key = keys.get(slug) or secrets.token_urlsafe(24)
+        keys[slug] = key
+        private.append({**entry, "keyHash": key_hash(key)})
+        url = private_url(slug, key)
+    save_live(public)
+    save_list(PRIVATE, private)
+    save_keys(keys)
+    print(f"{'updated' if old else 'published'} {slug} ({access})")
+    print(f"url: {url}")
     if args.deploy:
         cmd_deploy(args)
 
 
 def cmd_down(args: argparse.Namespace) -> None:
     slug = args.slug.strip("/").strip()
-    items = load_live()
+    public, private = load_live(), load_list(PRIVATE)
     dest = dest_for(slug)
-    exists = find(items, slug) or dest.exists()
-    if not exists:
+    exists = find(public, slug) or find(private, slug) or dest.exists()
+    if not exists or slug in RESERVED:
         sys.exit(
             f"Error: {slug!r} is not live.\n"
             "  python3 scratch.py list"
         )
     if args.dry_run:
         print(f"would remove {dest}/")
-        print(f"would drop {slug} from live.json")
+        print(f"would drop {slug} from live.json, private.json and the key file")
         return
-    items = [i for i in items if i.get("slug") != slug]
-    save_live(items)
+    save_live([i for i in public if i.get("slug") != slug])
+    save_list(PRIVATE, [i for i in private if i.get("slug") != slug])
+    keys = load_keys()
+    if keys.pop(slug, None) is not None:
+        save_keys(keys)
     if dest.exists():
         shutil.rmtree(dest)
     print(f"taken down {slug}")
@@ -128,13 +175,27 @@ def cmd_down(args: argparse.Namespace) -> None:
 
 
 def cmd_list(_: argparse.Namespace) -> None:
-    items = load_live()
-    if not items:
+    public, private = load_live(), load_list(PRIVATE)
+    if not public and not private:
         print("0 live")
         return
-    for item in items:
+    for item in public:
         slug = item.get("slug", "")
-        print(f"{slug}\t{BASE_URL}/{slug}/\t{item.get('title', '')}")
+        print(f"{slug}\tpublic\t{BASE_URL}/{slug}/\t{item.get('title', '')}")
+    for item in private:
+        slug = item.get("slug", "")
+        print(f"{slug}\tprivate\t{BASE_URL}/{slug}/\t{item.get('title', '')}")
+
+
+def cmd_link(args: argparse.Namespace) -> None:
+    slug = args.slug.strip("/").strip()
+    if find(load_live(), slug):
+        print(f"{BASE_URL}/{slug}/")
+        return
+    key = load_keys().get(slug)
+    if not find(load_list(PRIVATE), slug) or not key:
+        sys.exit(f"Error: no private share or key for {slug!r}.\n  python3 scratch.py list")
+    print(private_url(slug, key))
 
 
 def wrangler_env() -> dict[str, str]:
@@ -172,7 +233,7 @@ def cmd_deploy(args: argparse.Namespace) -> None:
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="scratch.py",
-        description="Put a page up on scratch.binaryloom.io, or take it down.",
+        description="Put a page up on scratch.binaryloom.io (private key link by default), or take it down.",
     )
     sub = p.add_subparsers(dest="cmd", required=True)
 
@@ -181,6 +242,11 @@ def build_parser() -> argparse.ArgumentParser:
     up.add_argument("--src", required=True, help="HTML file or directory with index.html")
     up.add_argument("--title", default="", help="Index title")
     up.add_argument("--note", default=None, help="One-line description")
+    up.add_argument(
+        "--public",
+        action="store_true",
+        help="List on the index and open without a key (default: private key link)",
+    )
     up.add_argument("--dry-run", action="store_true")
     up.add_argument("--no-deploy", action="store_true")
     up.set_defaults(func=cmd_up, deploy=True)
@@ -193,6 +259,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     listing = sub.add_parser("list", help="Print live slugs and URLs")
     listing.set_defaults(func=cmd_list, dry_run=False)
+
+    link = sub.add_parser("link", help="Print the share link, with its key if private")
+    link.add_argument("--slug", required=True)
+    link.set_defaults(func=cmd_link, dry_run=False)
 
     deploy = sub.add_parser("deploy", help="Deploy the current tree to Pages")
     deploy.add_argument("--dry-run", action="store_true")
