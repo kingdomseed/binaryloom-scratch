@@ -2,9 +2,12 @@
 // to the share's path. Only SHA-256 hashes of keys are deployed; scratch.py
 // keeps the keys outside this tree.
 import shares from "../private.json";
+import listed from "../live.json";
 
 const hashes = new Map(shares.map((s) => [s.slug, s.keyHash]));
-const HIDDEN = new Set(["private.json", "functions"]);
+// Pages keeps removed files in its edge cache for up to a week after a deploy,
+// so anything not listed now must 404 here or taken-down shares stay readable.
+const SERVED = new Set(["", "index.html", "404.html", "live.json", ...listed.map((s) => s.slug)]);
 const MONTH = 60 * 60 * 24 * 30;
 
 async function sha256(text) {
@@ -30,9 +33,8 @@ function cookie(request, name) {
 export async function onRequest(context) {
   const url = new URL(context.request.url);
   const first = decodeURIComponent(url.pathname.split("/")[1] || "");
-  if (HIDDEN.has(first)) return notFound();
   const expected = hashes.get(first);
-  if (!expected) return context.next();
+  if (!expected) return SERVED.has(first) ? context.next() : notFound();
 
   const name = `scratch_${first}`;
   const given = url.searchParams.get("k");

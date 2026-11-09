@@ -72,9 +72,9 @@
       count.textContent = items.length === 1 ? "1 live" : items.length + " live";
       list.innerHTML = items.map((item) => {
         const slug = String(item.slug || "").replace(/^\/+|\/+$/g, "");
-        const href = "./" + slug + "/";
+        const href = "./" + slug + "/" + (item.path || "");
         const title = item.title || slug;
-        const bits = [item.note, "/" + slug + "/", item.added].filter(Boolean);
+        const bits = [item.note, "/" + slug + "/" + (item.path || ""), item.added].filter(Boolean);
         return `<li><a class="doc" href="${href}">
           <div>
             <div class="title">${escapeHtml(title)}</div>

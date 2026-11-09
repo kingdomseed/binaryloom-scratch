@@ -1,3 +1,13 @@
-.wrangler
-node_modules
+# The repo holds the tool and the skill. Share folders, live.json and
+# private.json live only in mac-mini's checkout, the one machine that deploys.
+/*
+!/.gitignore
+!/.agents/
+!/AGENTS.md
+!/README.md
+!/scratch.py
+!/index.html
+!/404.html
+!/functions/
+!/CNAME
 .DS_Store

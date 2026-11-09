@@ -1,81 +1,82 @@
 ---
 name: scratch-binaryloom
-description: Publish and take down temporary pages on scratch.binaryloom.io, private by default (secret-key link) or public. Use when the user wants to host, share, throw up, unpublish, or take down a doc, HTML page, mermaid diagram, or other one-off on scratch, binaryloom scratch, or scratch.binaryloom.io.
+description: Upload, share, verify, revoke, and take down temporary pages and files on scratch.binaryloom.io. Shares are private by default (secret-key link) or public. Use when the user wants to host, share, throw up, unpublish, revoke, or take down a doc, HTML page, mermaid diagram, PDF, image, or other one-off on scratch, binaryloom scratch, or scratch.binaryloom.io.
 ---
 
 # scratch.binaryloom.io
 
-Temporary shares for Jason Holt. Each live item is a folder. Do not hand-edit `live.json`, `private.json`, or the index, and do not deploy around the CLI.
+Temporary shares for Jason Holt, served by the Cloudflare Pages project `binaryloom-scratch` at https://scratch.binaryloom.io (fallback https://binaryloom-scratch.pages.dev). Every action goes through `scratch.py`; never edit `live.json` or `private.json` by hand and never run `wrangler pages` directly.
 
-Repo: `~/repos/personal/binaryloom-scratch`  
-CLI: `python3 scratch.py` (run from that repo, or pass the full path)  
-Live: https://scratch.binaryloom.io  
-Fallback: https://binaryloom-scratch.pages.dev  
-Pages project: `binaryloom-scratch`
+## Where to run it
 
-**Private by default.** A share opens only from a link carrying a secret key (`?k=...`); without it the URL answers 404 and the share is not on the index. `--public` lists it on the index with no key. Anyone holding a private link can open and forward it, so it is not identity-checked; say so when the content is sensitive. Confirm slug + title before `up`, and confirm before using `--public`. Confirm slug before `down`.
+Only `mac-mini` publishes. Its checkout at `~/repos/personal/binaryloom-scratch` holds every live share folder, `live.json`, `private.json`, and the keys in `~/.config/binaryloom-scratch/keys.json`. A deploy uploads that tree as the whole site, so a deploy from any other machine would delete every share; the script refuses to deploy anywhere else. This is the one exception to the no-Artwod-on-mac-mini rule.
 
-## Before you run anything
-
-Need all of:
-
-1. Repo at `~/repos/personal/binaryloom-scratch` with `scratch.py`
-2. `python3` and `npx`
-3. Cloudflare Pages auth — `scratch.py deploy` uses the wrangler OAuth login (it ignores `CLOUDFLARE_API_TOKEN`)
-4. Account `bb9c6e1c45f208657aed12579feb6e3b` (script default)
-
-Probe:
+From another machine, copy the files over and run the script there:
 
 ```bash
-python3 ~/repos/personal/binaryloom-scratch/scratch.py list
-npx --yes wrangler whoami
+scp -r /path/to/report mac-mini:/tmp/scratch-SLUG
+ssh mac-mini 'python3 ~/repos/personal/binaryloom-scratch/scratch.py up --slug SLUG --src /tmp/scratch-SLUG --title "Title"'
+ssh mac-mini 'rm -rf /tmp/scratch-SLUG'
 ```
 
-If wrangler is not logged in, stop. Tell the user to run `npx wrangler login` and finish OAuth in **Helium** (never Chrome). Then retry.
+If `npx --yes wrangler whoami` on mac-mini says it is not logged in, stop and ask Jason to run `npx wrangler login` there and finish OAuth in Helium (never Chrome). The script ignores `CLOUDFLARE_API_TOKEN`.
 
-`scratch.py --help` / `scratch.py up --help` is the flag source of truth. Do not invent flags.
+`python3 scratch.py --help` and `python3 scratch.py <command> --help` are the source of truth for flags.
 
-## Put something up
+## Access
 
-Source must be an HTML file, or a directory that contains `index.html` (extra assets come along if you pass a directory).
+- **Private (default).** The share opens only from a link with `?k=KEY`; without it the URL returns 404 and the share is not on the index. Anyone with the link can open and forward it, so it is not tied to a person. Say so when the content is sensitive.
+- **Public (`--public`).** Listed on the index, no key. Use only when Jason asked for a public page.
+
+Confirm the slug and title before `up`, and confirm before `--public`. Never upload secrets, credentials, or anything Jason did not ask to share.
+
+## Upload
 
 ```bash
-python3 ~/repos/personal/binaryloom-scratch/scratch.py up \
-  --slug SLUG \
-  --src /absolute/path/to/index.html \
-  --title "Title" \
-  --note "One line"          # add --public only if the user asked for a public, listed page
+python3 scratch.py up --slug SLUG --src /absolute/path --title "Title" --note "One line"
 ```
 
-- `--slug`: one path segment, lowercase-kebab. Not `live.json`, `index.html`, `scratch.py`, `private.json`, or `functions`.
-- Re-running the same slug overwrites that share. A private share keeps its key, so sent links keep working.
-- `up` deploys unless `--no-deploy`. `--dry-run` prints the plan only.
-- The key lives in `~/.config/binaryloom-scratch/keys.json`; only its hash is deployed. `scratch.py link --slug SLUG` prints the link again.
+- `--src` is an HTML file (served as the share's page), any other file (served under its own name, `/SLUG/report.pdf`), or a directory with `index.html` (served with its assets).
+- `--slug` is one lowercase-kebab path segment that is not a site file (`index.html`, `404.html`, `live.json`, `private.json`, `functions`, `scratch.py`).
+- Running `up` again on a slug replaces its contents. A private share keeps its key, so links already sent keep working.
+- `up` deploys, verifies, deletes all older deployments, then prints the link. `--dry-run` shows the plan; `--no-deploy` changes only the local tree.
 
-Then:
+Give Jason the printed link. Do not paste a private link anywhere else, and do not put keys in commits, files, or issues.
 
-1. Give the user the link `up` printed (with `?k=` for private shares). Do not paste it anywhere else.
-2. Check it: private share without the key must return 404; with the key, 302 then 200 with the cookie. Public share: `curl -sI` the URL and the fallback `https://binaryloom-scratch.pages.dev/SLUG/`.
-3. If the custom domain does not resolve, give the pages.dev URL (same `?k=`) and say DNS on this machine may lag.
+## Verify
 
-Do not rebuild `index.html` to add a row. The homepage reads `live.json`, which holds public shares only.
+`up`, `down`, and `revoke` check both hostnames themselves and exit non-zero on any mismatch:
 
-## Take something down
+| Share | Expected |
+| --- | --- |
+| Public | 200 |
+| Private, no key | 404 |
+| Private, with key | 302 (key swapped for a cookie) |
+| Taken down, or an old revoked key | 404 |
+
+Run `python3 scratch.py check --slug SLUG` to repeat the check later. Report the result lines, not just "done". If only the custom domain fails, give the pages.dev link (same `?k=`) and say DNS may lag on this machine. For layout, open the link in a browser as well; a 200 does not prove the page renders.
+
+## Take down
 
 ```bash
-python3 ~/repos/personal/binaryloom-scratch/scratch.py list
-python3 ~/repos/personal/binaryloom-scratch/scratch.py down --slug SLUG
+python3 scratch.py list
+python3 scratch.py down --slug SLUG
 ```
 
-If the user says "take it down" without a slug, `list` first. Only skip the ask when one live item matches what they meant.
+`down` removes the folder, the index entry, and the key, deploys, verifies 404, and deletes every older deployment (each one keeps a permanent `<id>.binaryloom-scratch.pages.dev` URL that would still serve the share). There is no rollback. To publish the share again, Jason's original file is needed.
 
-`down` deletes the share and its key. Requires an explicit slug (from the user or from that list). `--dry-run` if they asked to preview. To revoke a private link but keep the page, `down` then `up` again: that issues a new key.
+If Jason says "take it down" without a slug, run `list` and ask, unless exactly one share matches what he meant.
 
-## Do not
+## Revoke a private link
 
-- Hand-edit `live.json`, `private.json`, or `index.html` for listing
-- Copy keys into the repo, commits, or chat beyond giving the user their link
-- `wrangler pages deploy` except via `scratch.py`
-- Publish secrets, private credentials, or anything the user did not ask to share
-- Use Chrome for Cloudflare/wrangler OAuth — Helium only
-- Leave a share up because deploy failed; report the failure and the local tree state (`list`)
+```bash
+python3 scratch.py revoke --slug SLUG
+```
+
+Replaces the key, deploys, verifies the old link returns 404 and the new one works, and deletes older deployments. Give Jason the new link. `python3 scratch.py link --slug SLUG` prints a current link again.
+
+## When something fails
+
+- Deploy or verification failed: older deployments are left alone. Quote the wrangler error and run `list` to show the local state.
+- Deleting old deployments failed: the new deploy is live, but old URLs may still serve removed content. Report the deployment IDs the script printed and rerun `python3 scratch.py deploy`.
+- Report FAIL lines as they are. Do not tell Jason a share is gone or private until `check` passes.
