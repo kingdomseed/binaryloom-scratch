@@ -129,8 +129,9 @@ def verify(checks: list[tuple[str, int]]) -> None:
     }
     got: dict[str, int] = {}
     pending = list(want)
-    # The new deployment can take a few seconds to reach every edge.
-    for _ in range(12):
+    # A new deployment can take over a minute to reach every edge after a
+    # large upload.
+    for _ in range(36):
         got.update({url: status(url) for url in pending})
         pending = [url for url in pending if got[url] != want[url]]
         if not pending:
